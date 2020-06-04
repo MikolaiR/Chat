@@ -30,6 +30,9 @@ class SignInActivity : AppCompatActivity() {
         setContentView(R.layout.activity_sign_in)
 
         auth = FirebaseAuth.getInstance()
+        if (auth.currentUser != null){
+            startActivity(Intent(this@SignInActivity, MainActivity::class.java))
+        }
 
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
@@ -58,7 +61,7 @@ class SignInActivity : AppCompatActivity() {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.exception)
                         Toast.makeText(baseContext, "Authentication failed.",
-                            Toast.LENGTH_SHORT).show()
+                            Toast.LENGTH_LONG).show()
                   //  todo    updateUI(null)
                         // ...
                     }
@@ -85,8 +88,6 @@ class SignInActivity : AppCompatActivity() {
                     // ...
                 }
         }
-
-        startActivity(Intent(this@SignInActivity,MainActivity::class.java))
     }
 
     override fun onStart() {
