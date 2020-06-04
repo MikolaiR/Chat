@@ -1,12 +1,16 @@
 package com.example.chat
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.*
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -40,7 +44,6 @@ class MainActivity : AppCompatActivity() {
         messageEditText = findViewById(R.id.messageEditText)
         sendPhotoButton = findViewById(R.id.sendPhotoButton)
         messageListView = findViewById(R.id.messageListView)
-        Log.i("messageEditText","${messageEditText}")
         awesomeMessage = mutableListOf<AwesomeMessage>()
         adapter = AwesomeMessageAdapter(this, R.layout.message_item, awesomeMessage)
         messageListView.adapter = adapter
@@ -70,25 +73,40 @@ class MainActivity : AppCompatActivity() {
         sendPhotoButton.setOnClickListener {
 
         }
+
         messageChildEventListener = object:ChildEventListener{
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                val message = p0.getValue(AwesomeMessage::class.java)
-                Log.i("messageAwesome","${message!!.name}--${message.text}")
                 adapter.add(message)
             }
             override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                TODO("Not yet implemented")
             }
             override fun onChildRemoved(p0: DataSnapshot) {
-                TODO("Not yet implemented")
             }
             override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-                TODO("Not yet implemented")
             }
             override fun onCancelled(p0: DatabaseError) {
-                TODO("Not yet implemented")
             }
         }
         messageDatabaseReference.addChildEventListener(messageChildEventListener)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu,menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId){
+            R.id.sign_out ->{
+                FirebaseAuth.getInstance().signOut()
+                startActivity(Intent(this@MainActivity,SignInActivity::class.java))
+                return true
+            }
+            else -> {
+                return super.onOptionsItemSelected(item)
+            }
+        }
     }
 }
