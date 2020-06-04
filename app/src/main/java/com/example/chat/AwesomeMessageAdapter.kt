@@ -14,9 +14,7 @@ import com.bumptech.glide.Glide
 
 class AwesomeMessageAdapter(context: Context, resource: Int, objects: MutableList<AwesomeMessage>) :
     ArrayAdapter<AwesomeMessage>(context, resource, objects) {
-    /*constructor(context: Context, resource: Int, objects: MutableList<AwesomeMessage>):(context, resource, objects){
-
-    }*/
+    
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
         if (view == null) {
@@ -25,7 +23,6 @@ class AwesomeMessageAdapter(context: Context, resource: Int, objects: MutableLis
         val photoImageView = view!!.findViewById<ImageView>(R.id.photoImageView)
         val textTextView = view.findViewById<TextView>(R.id.textTextView)
         val nameTextView = view.findViewById<TextView>(R.id.nameTextView)
-        Log.i("AwesomeMessageAdapter","${photoImageView}--${textTextView}--${nameTextView}")
         val message = getItem(position)!!
         val isText = message.imageUrl == null
         if (isText) {
