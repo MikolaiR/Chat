@@ -35,6 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:visibility="gone"
         android:hint="Confirm Password"
         android:inputType="textPassword" />
 
@@ -43,6 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:visibility="gone"
         android:hint="Your Name"
         android:inputType="textPersonName" />
     <Button
@@ -54,7 +56,7 @@
         android:layout_height="wrap_content"/>
     <TextView
         android:id="@+id/toggleLoginSignUpTextView"
-        android:text="Tap To Log IN"
+        android:text="Registration"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="8dp"
         android:textSize="16sp"

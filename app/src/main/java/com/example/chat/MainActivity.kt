@@ -23,13 +23,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sendPhotoButton: ImageButton
 
     private lateinit var adapter: AwesomeMessageAdapter
-    private var userName = "Default User"
+    private var userName:String? = null
     private lateinit var awesomeMessage:MutableList<AwesomeMessage>
 
     private lateinit var database: FirebaseDatabase
     private lateinit var messageDatabaseReference: DatabaseReference
-    private lateinit var usersDatabaseReference: DatabaseReference
     private lateinit var messageChildEventListener:ChildEventListener
+    private lateinit var usersDatabaseReference: DatabaseReference
+    private lateinit var usersChildEventListener: ChildEventListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,13 +38,40 @@ class MainActivity : AppCompatActivity() {
 
         database = Firebase.database
         messageDatabaseReference = database.getReference("message")
+        usersDatabaseReference = database.getReference("users")
 
         sendMessageButton = findViewById(R.id.sendMessageButton)
         progressBar = findViewById(R.id.progressBar)
         messageEditText = findViewById(R.id.messageEditText)
         sendPhotoButton = findViewById(R.id.sendPhotoButton)
         messageListView = findViewById(R.id.messageListView)
-        awesomeMessage = mutableListOf<AwesomeMessage>()
+
+        val intent = intent
+        if (intent.getStringExtra(USER_NAME) == null){
+            usersChildEventListener =object: ChildEventListener{
+                override fun onCancelled(p0: DatabaseError) {
+                }
+                override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                }
+                override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                }
+                override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                    val user = p0.getValue(User::class.java)!!
+                    if (user.id == FirebaseAuth.getInstance().currentUser!!.uid){
+                        userName = user.name
+                    }
+                }
+                override fun onChildRemoved(p0: DataSnapshot) {
+                }
+            }
+            usersDatabaseReference.addChildEventListener(usersChildEventListener)
+        }else{
+            userName = intent.getStringExtra(USER_NAME)
+        }
+
+
+
+        awesomeMessage = mutableListOf()
         adapter = AwesomeMessageAdapter(this, R.layout.message_item, awesomeMessage)
         messageListView.adapter = adapter
 
@@ -64,7 +92,7 @@ class MainActivity : AppCompatActivity() {
 
         messageEditText.filters = arrayOf(InputFilter.LengthFilter(500))
         sendMessageButton.setOnClickListener {
-            val message = AwesomeMessage(messageEditText.text.toString(),userName,null)
+            val message = AwesomeMessage(messageEditText.text.toString(),userName!!,null)
             messageDatabaseReference.push().setValue(message)
 
             messageEditText.setText("")
@@ -97,15 +125,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId){
+        return when (item.itemId){
             R.id.sign_out ->{
                 FirebaseAuth.getInstance().signOut()
                 startActivity(Intent(this@MainActivity,SignInActivity::class.java))
-                return true
+                true
             }
             else -> {
-                return super.onOptionsItemSelected(item)
+                super.onOptionsItemSelected(item)
             }
         }
+    }
+    companion object{
+        const val USER_NAME:String = "userName"
     }
 }
